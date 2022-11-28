@@ -4,24 +4,26 @@ pragma solidity 0.8.9;
 /* 
 
     token coin difference 
-    if it has own blockchain then coin 
+    If it has its own blockchain, then it's a coin, and if it operates on an existing blockchain, then it's a token 
 
-     1 Ether = 1 Ether
-    1 Ether = 10^9 / 10**9 Gwei -> only use second one
+    1 Ether = 1 Ether
+    1 Ether = 10^9 / 10**9 Gwei -> only use second way
     1 Ether = 10^18 / 10**18 Wei
-    hash -> password , 256 bit , if we change even one character whole hash changes
+    hash -> password , 256 bit , a function that meets the encrypted demands needed to solve for a blockchain computation, if we change even one character whole hash changes
 
     result = number1 + result ; is the same thing with result += number1;
     msg.sender = the addres of message
     msg.value = the value of message
 
-    Transfer, (2300 gas) , throws error , gas is limited for preventing reenteracy attacks
-    call ,return bool + dat , can limit gas useage -> reccomended way to send eth
-    (bool sent , bytes memory data) = targetAddress.call{value:1000, gas: 10000}(""); in paranthesis we can call functions
-    send  (2300 gas) return bool gas is limited for preventing reenteracy attacks
+    Transfer (2300 gas) , throws error , gas is limited for preventing reentrancy attacks
+    Send  (2300 gas) return bool, gas is limited for preventing reentrancy attacks
+    Call  (gas limit can be defined),return bool + data ,gas is not limited so vulnerable for reentrancy attacks-> reccomended way to send eth
+    (bool sent , bytes memory data) = targetAddress.call{value:1000, gas: 10000}("function changeName(string) , "Yeni İsim" "); 
+    Data : It returns the value of the function which we decleare in parentheses of call. Here it will return the value of changeName function. 
+   
     
     */
-contract Second {
+ contract Second {
     mapping(address => uint) balances;
 
     function sendToContract() public payable {
@@ -35,10 +37,10 @@ contract Second {
     }
 
     function withdraw() public payable {
-        require(balances[msg.sender] > (10 ** 18), "not enough money");
+        require(balances[msg.sender] > 0, "not enough money");
         uint amount2 = balances[msg.sender];
-        balances[msg.sender] = 0;
         (bool done, ) = msg.sender.call{value: amount2}("");
+        balances[msg.sender] = 0; //normaly we should change before call function 
     }
 
     function reader(address _address) public view returns (uint) {
@@ -46,7 +48,7 @@ contract Second {
     }
 }
 
-contract a1 {
+contract wolf {
     Second s1;
 
     constructor(address enemyContract) {
